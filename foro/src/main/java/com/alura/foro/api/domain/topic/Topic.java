@@ -28,6 +28,7 @@ public class Topic {
 	private String title;
 	private String body;
 	private LocalDateTime creationDate;
+	private LocalDateTime lastUpdated;
 	@Enumerated(EnumType.STRING)
 	private Status status;
 	private String author;
@@ -37,8 +38,33 @@ public class Topic {
 		this.title = createTopicDTO.title();
 		this.body = createTopicDTO.body();
 		this.creationDate = LocalDateTime.now();
+		this.lastUpdated = LocalDateTime.now();
 		this.status = Status.OPEN;
 		this.author = createTopicDTO.author(); //Falta hacer que se agregue automatico el usuario activo como autor. Se modifica CreateTopicDTO y creo que TopicsController
 		this.course = createTopicDTO.course();
+	}
+	
+	public void updateTopic(UpdateTopicDTO updateTopicDTO) {
+		if (updateTopicDTO.title() != null) {
+			this.title = updateTopicDTO.title();
+		}
+		if (updateTopicDTO.body() != null) {
+			this.body = updateTopicDTO.body();
+		}
+		if (updateTopicDTO.status() != null) {
+			this.status = updateTopicDTO.status();
+		}
+		if (updateTopicDTO.course() != null) {
+			this.course = updateTopicDTO.course();
+		}
+		this.lastUpdated = LocalDateTime.now();
+	}
+	
+	public void closeTopic() {
+		this.status = Status.CLOSED;
+	}
+	
+	public void archiveTopic() {
+		this.status = Status.ARCHIVED;
 	}
 }

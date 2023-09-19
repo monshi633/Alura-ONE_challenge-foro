@@ -7,6 +7,7 @@ public record TopicDetailsDTO(
 		String title,
 		String body,
 		LocalDateTime creationDate,
+		LocalDateTime lastUpdate,
 		Status status,
 		String author,
 		String course) {
@@ -16,6 +17,7 @@ public record TopicDetailsDTO(
 				topic.getTitle(),
 				topic.getBody(),
 				topic.getCreationDate(),
+				topic.getLastUpdated(),
 				topic.getStatus(),
 				topic.getAuthor(),
 				topic.getCourse());
