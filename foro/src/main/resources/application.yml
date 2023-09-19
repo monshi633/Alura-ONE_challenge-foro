@@ -1,0 +1,17 @@
+spring:
+    profile.active: dev
+    datasource:
+        url: jdbc:mysql://localhost/foro_alura
+        username: root
+        password: root
+    jpa:
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
+server:
+    error:
+        include-stacktrace: never
+api:
+    security:
+        secret: ${JWT_SECRET:0303456}
