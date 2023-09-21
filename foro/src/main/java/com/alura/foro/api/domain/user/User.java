@@ -51,10 +51,28 @@ public class User implements UserDetails{
 		this.enabled = true;
 	}
 
-	public void updateUser(UpdateUserDTO updateUserDTO, String hashedPassword) {
+	public void updateUserWithPassword(UpdateUserDTO updateUserDTO, String hashedPassword) {
 		if (updateUserDTO.password() != null) {
 			this.password = hashedPassword;
 		}
+		if (updateUserDTO.role() != null) {
+			this.role = updateUserDTO.role();
+		}
+		if (updateUserDTO.firstName() != null) {
+			this.firstName = capitalized(updateUserDTO.firstName());
+		}
+		if (updateUserDTO.lastName() != null) {
+			this.lastName = capitalized(updateUserDTO.lastName());
+		}
+		if (updateUserDTO.email() != null) {
+			this.email = updateUserDTO.email();
+		}
+		if (updateUserDTO.enabled() != null) {
+			this.enabled = updateUserDTO.enabled();
+		}
+	}
+	
+	public void updateUser(UpdateUserDTO updateUserDTO) {
 		if (updateUserDTO.role() != null) {
 			this.role = updateUserDTO.role();
 		}

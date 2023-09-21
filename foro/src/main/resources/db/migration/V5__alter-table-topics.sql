@@ -1,0 +1,1 @@
+ALTER TABLE topics CHANGE COLUMN author user_id BIGINT NOT NULL;

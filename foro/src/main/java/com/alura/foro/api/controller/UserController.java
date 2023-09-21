@@ -77,8 +77,12 @@ public class UserController {
 	@Transactional
 	public ResponseEntity<UserDetailsDTO> updateUser(@RequestBody @Valid UpdateUserDTO updateUserDTO, @PathVariable String username) {
 		User user = (User) repository.findByUsername(username);
-		String hashedPassword = passwordEncoder.encode(updateUserDTO.password());
-		user.updateUser(updateUserDTO, hashedPassword);
+		if (updateUserDTO.password() != null) {
+			String hashedPassword = passwordEncoder.encode(updateUserDTO.password());			
+			user.updateUserWithPassword(updateUserDTO, hashedPassword);
+		} else {
+			user.updateUser(updateUserDTO);
+		}
 		var userData = new UserDetailsDTO(user.getId(),
 				user.getUsername(),
 				user.getRole(),

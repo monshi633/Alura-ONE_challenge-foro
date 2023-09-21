@@ -2,12 +2,17 @@ package com.alura.foro.api.domain.topic;
 
 import java.time.LocalDateTime;
 
+import com.alura.foro.api.domain.user.User;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -29,18 +34,22 @@ public class Topic {
 	private String body;
 	private LocalDateTime creationDate;
 	private LocalDateTime lastUpdated;
+	
 	@Enumerated(EnumType.STRING)
 	private Status status;
-	private String author;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+	private User user;
 	private String course;
 
-	public Topic(CreateTopicDTO createTopicDTO) {
+	public Topic(CreateTopicDTO createTopicDTO, User user) {
 		this.title = createTopicDTO.title();
 		this.body = createTopicDTO.body();
 		this.creationDate = LocalDateTime.now();
 		this.lastUpdated = LocalDateTime.now();
 		this.status = Status.OPEN;
-		this.author = createTopicDTO.author(); //Falta hacer que se agregue automatico el usuario activo como autor. Se modifica CreateTopicDTO y creo que TopicsController
+		this.user = user; //Falta hacer que se agregue automatico el usuario activo como autor. Se modifica CreateTopicDTO y creo que TopicsController
 		this.course = createTopicDTO.course();
 	}
 	
