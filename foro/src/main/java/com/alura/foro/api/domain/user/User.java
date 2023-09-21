@@ -8,6 +8,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,6 +34,47 @@ public class User implements UserDetails{
 	private Long id;
 	private String username;
 	private String password;
+	@Enumerated(EnumType.STRING)
+	private Role role;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private Boolean enabled;
+	
+	public User(CreateUserDTO createUserDTO, String hashedPassword) {
+		this.username = createUserDTO.username();
+		this.password = hashedPassword;
+		this.role = createUserDTO.role();
+		this.firstName = capitalized(createUserDTO.firstName());
+		this.lastName = capitalized(createUserDTO.lastName());
+		this.email = createUserDTO.email();
+		this.enabled = true;
+	}
+
+	public void updateUser(UpdateUserDTO updateUserDTO, String hashedPassword) {
+		if (updateUserDTO.password() != null) {
+			this.password = hashedPassword;
+		}
+		if (updateUserDTO.role() != null) {
+			this.role = updateUserDTO.role();
+		}
+		if (updateUserDTO.firstName() != null) {
+			this.firstName = capitalized(updateUserDTO.firstName());
+		}
+		if (updateUserDTO.lastName() != null) {
+			this.lastName = capitalized(updateUserDTO.lastName());
+		}
+		if (updateUserDTO.email() != null) {
+			this.email = updateUserDTO.email();
+		}
+		if (updateUserDTO.enabled() != null) {
+			this.enabled = updateUserDTO.enabled();
+		}
+	}
+	
+	public void deleteUser() {
+		this.enabled = false;
+	}
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -51,7 +94,11 @@ public class User implements UserDetails{
 	}
 	@Override
 	public boolean isEnabled() {
-		return true;
+		return enabled;
+	}
+	
+	private String capitalized(String string) {
+		return string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase();
 	}
 	
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +31,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/topics")
-public class TopicsController {
+public class TopicController {
 
 	@Autowired
 	private TopicRepository repository;
@@ -40,30 +41,27 @@ public class TopicsController {
 	
 	@PostMapping
 	@Transactional
-	public ResponseEntity<TopicDetailsDTO> createTopic(@RequestBody @Valid CreateTopicDTO createTopicDTO, UriComponentsBuilder uribBuilder) {
-		
+	public ResponseEntity<TopicDetailsDTO> createTopic(@RequestBody @Valid CreateTopicDTO createTopicDTO, UriComponentsBuilder uriBuilder) {
 		validators.forEach(v -> v.validate(createTopicDTO));
 		
 		var topic = new Topic(createTopicDTO);
 		repository.save(topic);
 		
-		var uri = uribBuilder.path("/topics/{id}").buildAndExpand(topic.getId()).toUri();
+		var uri = uriBuilder.path("/topics/{id}").buildAndExpand(topic.getId()).toUri();
 		return ResponseEntity.created(uri).body(new TopicDetailsDTO(topic));
-		
 	}
 	
 	@GetMapping
-	public ResponseEntity<Page<TopicDetailsDTO>> readNonArchivedTopics(@PageableDefault(size = 5, sort = {"id"}) Pageable pagination) {
-		var page = repository.findAllByStatusIsNot(Status.ARCHIVED,pagination).map(TopicDetailsDTO::new);
+	public ResponseEntity<Page<TopicDetailsDTO>> readNonDeletedTopics(@PageableDefault(size = 5, sort = {"lastUpdated"}, direction = Direction.DESC) Pageable pagination) {
+		var page = repository.findAllByStatusIsNot(Status.DELETED,pagination).map(TopicDetailsDTO::new);
 		return ResponseEntity.ok(page);
 		
 	}
 	
 	@GetMapping("/all")
-	public ResponseEntity<Page<TopicDetailsDTO>> readAllTopics(@PageableDefault(size = 5, sort = {"id"}) Pageable pagination) {
+	public ResponseEntity<Page<TopicDetailsDTO>> readAllTopics(@PageableDefault(size = 5, sort = {"lastUpdated"}, direction = Direction.DESC) Pageable pagination) {
 		var page = repository.findAll(pagination).map(TopicDetailsDTO::new);
 		return ResponseEntity.ok(page);
-		
 	}
 	
 	@GetMapping("/{id}")
@@ -96,7 +94,6 @@ public class TopicsController {
 				topic.getCourse()
 				);
 		return ResponseEntity.ok(topicData);
-		
 	}
 	
 	@DeleteMapping("/{id}")
