@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.alura.foro.api.domain.course.Course;
+import com.alura.foro.api.domain.course.CourseRepository;
 import com.alura.foro.api.domain.topic.CreateTopicDTO;
 import com.alura.foro.api.domain.topic.Status;
 import com.alura.foro.api.domain.topic.Topic;
@@ -41,6 +43,9 @@ public class TopicController {
 	private UserRepository userRepository;
 	
 	@Autowired
+	private CourseRepository courseRepository;
+	
+	@Autowired
 	List<TopicValidators> validators;
 	
 	@PostMapping
@@ -49,8 +54,9 @@ public class TopicController {
 		validators.forEach(v -> v.validate(createTopicDTO));
 		
 		var user = userRepository.findById(createTopicDTO.userId()).get();
+		var course = courseRepository.findById(createTopicDTO.courseId()).get();
 		
-		var topic = new Topic(createTopicDTO, user);
+		var topic = new Topic(createTopicDTO, user, course);
 		topicRepository.save(topic);
 		
 		var uri = uriBuilder.path("/topics/{id}").buildAndExpand(topic.getId()).toUri();
@@ -61,7 +67,6 @@ public class TopicController {
 	public ResponseEntity<Page<TopicDetailsDTO>> readNonDeletedTopics(@PageableDefault(size = 5, sort = {"lastUpdated"}, direction = Direction.DESC) Pageable pagination) {
 		var page = topicRepository.findAllByStatusIsNot(Status.DELETED,pagination).map(TopicDetailsDTO::new);
 		return ResponseEntity.ok(page);
-		
 	}
 	
 	@GetMapping("/all")
@@ -80,7 +85,8 @@ public class TopicController {
 				topic.getLastUpdated(),
 				topic.getStatus(),
 				topic.getUser().getUsername(),
-				topic.getCourse()
+				topic.getCourse().getName(),
+				topic.getCourse().getCategory()
 				);
 		return ResponseEntity.ok(topicData);
 	}
@@ -89,7 +95,12 @@ public class TopicController {
 	@Transactional
 	public ResponseEntity<TopicDetailsDTO> updateTopic(@RequestBody @Valid UpdateTopicDTO updateTopicDTO, @PathVariable Long id) {
 		Topic topic = topicRepository.getReferenceById(id);
-		topic.updateTopic(updateTopicDTO);
+		if (updateTopicDTO.courseId() != null) {
+			Course course = courseRepository.getReferenceById(updateTopicDTO.courseId());
+			topic.updateTopicWithCourse(updateTopicDTO, course);
+		} else {
+			topic.updateTopic(updateTopicDTO);
+		}
 		var topicData = new TopicDetailsDTO(topic.getId(),
 				topic.getTitle(),
 				topic.getBody(),
@@ -97,7 +108,8 @@ public class TopicController {
 				topic.getLastUpdated(),
 				topic.getStatus(),
 				topic.getUser().getUsername(),
-				topic.getCourse()
+				topic.getCourse().getName(),
+				topic.getCourse().getCategory()
 				);
 		return ResponseEntity.ok(topicData);
 	}

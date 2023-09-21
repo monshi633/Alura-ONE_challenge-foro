@@ -2,6 +2,8 @@ package com.alura.foro.api.domain.topic;
 
 import java.time.LocalDateTime;
 
+import com.alura.foro.api.domain.course.Category;
+
 public record TopicDetailsDTO(
 		Long id,
 		String title,
@@ -10,7 +12,8 @@ public record TopicDetailsDTO(
 		LocalDateTime lastUpdate,
 		Status status,
 		String user,
-		String course) {
+		String course,
+		Category courseCategory) {
 	
 	public TopicDetailsDTO(Topic topic) {
 		this(topic.getId(),
@@ -20,7 +23,8 @@ public record TopicDetailsDTO(
 				topic.getLastUpdated(),
 				topic.getStatus(),
 				topic.getUser().getUsername(),
-				topic.getCourse());
+				topic.getCourse().getName(),
+				topic.getCourse().getCategory());
 	}
 
 }

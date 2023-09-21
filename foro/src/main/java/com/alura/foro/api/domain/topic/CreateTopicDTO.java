@@ -7,5 +7,5 @@ public record CreateTopicDTO(
 		@NotBlank String title,
 		@NotBlank String body,
 		@NotNull Long userId,
-		@NotBlank String course) {
+		@NotNull Long courseId) {
 }

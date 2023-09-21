@@ -73,6 +73,7 @@ public class UserController {
 				);
 		return ResponseEntity.ok(userData);
 	}
+	
 	@PutMapping("/{username}")
 	@Transactional
 	public ResponseEntity<UserDetailsDTO> updateUser(@RequestBody @Valid UpdateUserDTO updateUserDTO, @PathVariable String username) {

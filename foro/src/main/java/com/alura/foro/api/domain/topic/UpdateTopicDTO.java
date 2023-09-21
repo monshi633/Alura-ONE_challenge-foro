@@ -4,5 +4,5 @@ public record UpdateTopicDTO(
 		String title,
 		String body,
 		Status status,
-		String course) {
+		Long courseId) {
 }

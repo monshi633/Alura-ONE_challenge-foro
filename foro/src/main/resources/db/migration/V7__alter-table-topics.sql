@@ -1,0 +1,1 @@
+ALTER TABLE topics CHANGE COLUMN course course_id BIGINT NOT NULL;

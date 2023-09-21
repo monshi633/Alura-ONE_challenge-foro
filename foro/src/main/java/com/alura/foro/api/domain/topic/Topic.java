@@ -2,6 +2,7 @@ package com.alura.foro.api.domain.topic;
 
 import java.time.LocalDateTime;
 
+import com.alura.foro.api.domain.course.Course;
 import com.alura.foro.api.domain.user.User;
 
 import jakarta.persistence.Entity;
@@ -41,16 +42,35 @@ public class Topic {
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
 	private User user;
-	private String course;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+	private Course course;
 
-	public Topic(CreateTopicDTO createTopicDTO, User user) {
+	public Topic(CreateTopicDTO createTopicDTO, User user, Course course) {
 		this.title = createTopicDTO.title();
 		this.body = createTopicDTO.body();
 		this.creationDate = LocalDateTime.now();
 		this.lastUpdated = LocalDateTime.now();
 		this.status = Status.OPEN;
-		this.user = user; //Falta hacer que se agregue automatico el usuario activo como autor. Se modifica CreateTopicDTO y creo que TopicsController
-		this.course = createTopicDTO.course();
+		this.user = user;
+		this.course = course;
+	}
+	
+	public void updateTopicWithCourse(UpdateTopicDTO updateTopicDTO, Course course) {
+		if (updateTopicDTO.title() != null) {
+			this.title = updateTopicDTO.title();
+		}
+		if (updateTopicDTO.body() != null) {
+			this.body = updateTopicDTO.body();
+		}
+		if (updateTopicDTO.status() != null) {
+			this.status = updateTopicDTO.status();
+		}
+		if (updateTopicDTO.courseId() != null) {
+			this.course = course;
+		}
+		this.lastUpdated = LocalDateTime.now();
 	}
 	
 	public void updateTopic(UpdateTopicDTO updateTopicDTO) {
@@ -62,9 +82,6 @@ public class Topic {
 		}
 		if (updateTopicDTO.status() != null) {
 			this.status = updateTopicDTO.status();
-		}
-		if (updateTopicDTO.course() != null) {
-			this.course = updateTopicDTO.course();
 		}
 		this.lastUpdated = LocalDateTime.now();
 	}
