@@ -14,4 +14,6 @@ public interface TopicRepository extends JpaRepository<Topic, Long>{
 	
 	Boolean existsByTitleAndBody(String title, String body);
 	
+	Topic findByTitle(String title);
+	
 }

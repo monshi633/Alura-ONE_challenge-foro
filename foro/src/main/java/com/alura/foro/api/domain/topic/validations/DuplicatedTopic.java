@@ -18,7 +18,7 @@ public class DuplicatedTopic implements TopicValidators{
 	public void validate(CreateTopicDTO data) {
 		var duplicatedTopic = repository.existsByTitleAndBody(data.title(), data.body());
 		if (duplicatedTopic) {
-			throw new ValidationException("This topic already exists. Check /topics/" + "acá falta get id del que ya existe");
+			throw new ValidationException("This topic already exists. Check /topics/" + repository.findByTitle(data.title()).getId());
 		}
 	}
 
