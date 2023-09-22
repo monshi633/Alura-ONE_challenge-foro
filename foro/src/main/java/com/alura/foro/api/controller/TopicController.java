@@ -27,6 +27,7 @@ import com.alura.foro.api.domain.topic.TopicDetailsDTO;
 import com.alura.foro.api.domain.topic.TopicRepository;
 import com.alura.foro.api.domain.topic.UpdateTopicDTO;
 import com.alura.foro.api.domain.topic.validations.TopicValidators;
+import com.alura.foro.api.domain.user.User;
 import com.alura.foro.api.domain.user.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -53,10 +54,10 @@ public class TopicController {
 	public ResponseEntity<TopicDetailsDTO> createTopic(@RequestBody @Valid CreateTopicDTO createTopicDTO, UriComponentsBuilder uriBuilder) {
 		validators.forEach(v -> v.validate(createTopicDTO));
 		
-		var user = userRepository.findById(createTopicDTO.userId()).get();
-		var course = courseRepository.findById(createTopicDTO.courseId()).get();
+		User user = userRepository.findById(createTopicDTO.userId()).get();
+		Course course = courseRepository.findById(createTopicDTO.courseId()).get();
 		
-		var topic = new Topic(createTopicDTO, user, course);
+		Topic topic = new Topic(createTopicDTO, user, course);
 		topicRepository.save(topic);
 		
 		var uri = uriBuilder.path("/topics/{id}").buildAndExpand(topic.getId()).toUri();
@@ -78,7 +79,8 @@ public class TopicController {
 	@GetMapping("/{id}")
 	public ResponseEntity<TopicDetailsDTO> readSingleTopic(@PathVariable Long id) {
 		Topic topic = topicRepository.getReferenceById(id);
-		var topicData = new TopicDetailsDTO(topic.getId(),
+		var topicData = new TopicDetailsDTO(
+				topic.getId(),
 				topic.getTitle(),
 				topic.getBody(),
 				topic.getCreationDate(),
@@ -101,7 +103,8 @@ public class TopicController {
 		} else {
 			topic.updateTopic(updateTopicDTO);
 		}
-		var topicData = new TopicDetailsDTO(topic.getId(),
+		var topicData = new TopicDetailsDTO(
+				topic.getId(),
 				topic.getTitle(),
 				topic.getBody(),
 				topic.getCreationDate(),
@@ -121,4 +124,5 @@ public class TopicController {
 		topic.deleteTopic();
 		return ResponseEntity.noContent().build();
 	}
+	
 }

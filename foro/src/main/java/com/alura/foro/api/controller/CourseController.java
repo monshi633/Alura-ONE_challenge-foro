@@ -33,7 +33,7 @@ public class CourseController {
 	@PostMapping
 	@Transactional
 	public ResponseEntity<CourseDetailsDTO> createTopic(@RequestBody @Valid CreateCourseDTO createCourseDTO, UriComponentsBuilder uriBuilder) {
-		var course = new Course(createCourseDTO);
+		Course course = new Course(createCourseDTO);
 		repository.save(course);
 		var uri = uriBuilder.path("/courses/{id}").buildAndExpand(course.getId()).toUri();
 		return ResponseEntity.created(uri).body(new CourseDetailsDTO(course));
@@ -54,7 +54,8 @@ public class CourseController {
 	@GetMapping("/{id}")
 	public ResponseEntity<CourseDetailsDTO> readSingleCourse(@PathVariable Long id) {
 		Course course = repository.getReferenceById(id);
-		var courseData = new CourseDetailsDTO(course.getId(),
+		var courseData = new CourseDetailsDTO(
+				course.getId(),
 				course.getName(),
 				course.getCategory(),
 				course.getActive()
@@ -67,7 +68,8 @@ public class CourseController {
 	public ResponseEntity<CourseDetailsDTO> updateCourse(@RequestBody @Valid UpdateCourseDTO updateCourseDTO, @PathVariable Long id) {
 		Course course = repository.getReferenceById(id);
 		course.updateCourse(updateCourseDTO);
-		var courseData = new CourseDetailsDTO(course.getId(),
+		var courseData = new CourseDetailsDTO(
+				course.getId(),
 				course.getName(),
 				course.getCategory(),
 				course.getActive()

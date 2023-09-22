@@ -41,7 +41,7 @@ public class UserController {
 		
 		String hashedPassword = passwordEncoder.encode(createUserDTO.password());
 		
-		var user = new User(createUserDTO, hashedPassword);
+		User user = new User(createUserDTO, hashedPassword);
 		repository.save(user);
 		
 		var uri = uriBuilder.path("/users/{username}").buildAndExpand(user.getUsername()).toUri();
@@ -63,7 +63,8 @@ public class UserController {
 	@GetMapping("/{username}")
 	public ResponseEntity<UserDetailsDTO> readSingleUser(@PathVariable String username) {
 		User user = (User) repository.findByUsername(username);
-		var userData = new UserDetailsDTO(user.getId(),
+		var userData = new UserDetailsDTO(
+				user.getId(),
 				user.getUsername(),
 				user.getRole(),
 				user.getFirstName(),
@@ -84,7 +85,8 @@ public class UserController {
 		} else {
 			user.updateUser(updateUserDTO);
 		}
-		var userData = new UserDetailsDTO(user.getId(),
+		var userData = new UserDetailsDTO(
+				user.getId(),
 				user.getUsername(),
 				user.getRole(),
 				user.getFirstName(),

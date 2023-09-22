@@ -16,18 +16,18 @@ import jakarta.validation.ValidationException;
 
 @RestControllerAdvice
 public class ErrorsTreatment {
-
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<List<?>> error400Handler(MethodArgumentNotValidException e){
+		var error = e.getFieldErrors().stream().map(DataErrorsValidation::new).toList();
+		return ResponseEntity.badRequest().body(error);
+	}
+	
 	@ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<?> error404Handler(){
         return ResponseEntity.notFound().build();
-    }
-	
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<List<?>> error400Handler(MethodArgumentNotValidException e){
-        var error = e.getFieldErrors().stream().map(DataErrorsValidation::new).toList();
-        return ResponseEntity.badRequest().body(error);
     }
 	
 	@ExceptionHandler(IntegrityValidation.class)

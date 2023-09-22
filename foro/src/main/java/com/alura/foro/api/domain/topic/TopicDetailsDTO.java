@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import com.alura.foro.api.domain.course.Category;
 
-public record TopicDetailsDTO(
+public record TopicDetailsDTO (
 		Long id,
 		String title,
 		String body,
