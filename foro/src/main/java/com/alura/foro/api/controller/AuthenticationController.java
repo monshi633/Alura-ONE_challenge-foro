@@ -15,10 +15,12 @@ import com.alura.foro.api.domain.user.UserAuthenticationDTO;
 import com.alura.foro.api.infra.security.JWTtokenDTO;
 import com.alura.foro.api.infra.security.TokenService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/login")
+@Tag(name = "Authentication", description = "Gets the designated user's token for endpoint access")
 public class AuthenticationController {
 
 	@Autowired
@@ -29,10 +31,14 @@ public class AuthenticationController {
 
 	@PostMapping
 	public ResponseEntity<JWTtokenDTO> authenticateUser(@RequestBody @Valid UserAuthenticationDTO userAuthentication) {
+		
 		Authentication authToken = new UsernamePasswordAuthenticationToken(userAuthentication.username(),
 				userAuthentication.password());
+		
 		var authentifiedUser = authenticationManager.authenticate(authToken);
+		
 		var JWTtoken = tokenService.generateToken((User) authentifiedUser.getPrincipal());
+		
 		return ResponseEntity.ok(new JWTtokenDTO(JWTtoken));
 	}
 

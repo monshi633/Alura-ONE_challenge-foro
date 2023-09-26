@@ -48,7 +48,7 @@ public class TokenService {
                     .verify(token);
             verifier.getSubject();
 		} catch (JWTVerificationException e) {
-			System.out.println(e.toString());
+			System.out.println(e.toString()); //This could be improved so it returns "invalid token" or "token expired" in the body and not in console
 		}
 		
 		if (verifier.getSubject() == null) {

@@ -34,11 +34,16 @@ import com.alura.foro.api.domain.topic.validations.update.UpdateTopicValidators;
 import com.alura.foro.api.domain.user.User;
 import com.alura.foro.api.domain.user.UserRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/topics")
+@SecurityRequirement(name = "bearer-key")
+@Tag(name = "Topic", description = "It's linked to a specific course and user")
 public class TopicController {
 
 	@Autowired
@@ -61,34 +66,46 @@ public class TopicController {
 	
 	@PostMapping
 	@Transactional
+	@Operation(summary = "Registers a new topic into the database")
 	public ResponseEntity<TopicDetailsDTO> createTopic(@RequestBody @Valid CreateTopicDTO createTopicDTO, UriComponentsBuilder uriBuilder) {
+		
 		createValidators.forEach(v -> v.validate(createTopicDTO));
 		
 		User user = userRepository.findById(createTopicDTO.userId()).get();
 		Course course = courseRepository.findById(createTopicDTO.courseId()).get();
-		
 		Topic topic = new Topic(createTopicDTO, user, course);
+		
 		topicRepository.save(topic);
 		
+
 		var uri = uriBuilder.path("/topics/{id}").buildAndExpand(topic.getId()).toUri();
 		return ResponseEntity.created(uri).body(new TopicDetailsDTO(topic));
 	}
 	
-	@GetMapping
-	public ResponseEntity<Page<TopicDetailsDTO>> readNonDeletedTopics(@PageableDefault(size = 5, sort = {"lastUpdated"}, direction = Direction.DESC) Pageable pagination) {
-		var page = topicRepository.findAllByStatusIsNot(Status.DELETED,pagination).map(TopicDetailsDTO::new);
+	@GetMapping("/all")
+	@Operation(summary = "Reads all topics regardless of their status")
+	public ResponseEntity<Page<TopicDetailsDTO>> readAllTopics(@PageableDefault(size = 5, sort = {"lastUpdated"}, direction = Direction.DESC) Pageable pagination) {
+		
+		var page = topicRepository.findAll(pagination).map(TopicDetailsDTO::new);
+		
 		return ResponseEntity.ok(page);
 	}
 	
-	@GetMapping("/all")
-	public ResponseEntity<Page<TopicDetailsDTO>> readAllTopics(@PageableDefault(size = 5, sort = {"lastUpdated"}, direction = Direction.DESC) Pageable pagination) {
-		var page = topicRepository.findAll(pagination).map(TopicDetailsDTO::new);
+	@GetMapping
+	@Operation(summary = "Lists open and closed topics")
+	public ResponseEntity<Page<TopicDetailsDTO>> readNonDeletedTopics(@PageableDefault(size = 5, sort = {"lastUpdated"}, direction = Direction.DESC) Pageable pagination) {
+		
+		var page = topicRepository.findAllByStatusIsNot(Status.DELETED,pagination).map(TopicDetailsDTO::new);
+		
 		return ResponseEntity.ok(page);
 	}
 	
 	@GetMapping("/{id}")
+	@Operation(summary = "Reads a single topic by its ID")
 	public ResponseEntity<TopicDetailsDTO> readSingleTopic(@PathVariable Long id) {
+		
 		Topic topic = topicRepository.getReferenceById(id);
+		
 		var topicData = new TopicDetailsDTO(
 				topic.getId(),
 				topic.getTitle(),
@@ -100,11 +117,14 @@ public class TopicController {
 				topic.getCourse().getName(),
 				topic.getCourse().getCategory()
 				);
+		
 		return ResponseEntity.ok(topicData);
 	}
 	
 	@GetMapping("/{id}/solution")
+	@Operation(summary = "Reads the topic's answer marked as its solution")
 	public ResponseEntity<AnswerDetailsDTO> readTopicSolution(@PathVariable Long id) {
+		
 		Answer answer = answerRepository.getReferenceByTopicId(id);
 		
 		var answerData = new AnswerDetailsDTO(
@@ -119,12 +139,15 @@ public class TopicController {
 				answer.getTopic().getId(),
 				answer.getTopic().getTitle()
 				);
+		
 		return ResponseEntity.ok(answerData);
 	}
 	
 	@PutMapping("/{id}")
 	@Transactional
+	@Operation(summary = "Updates a topic title, body, status or course ID")
 	public ResponseEntity<TopicDetailsDTO> updateTopic(@RequestBody @Valid UpdateTopicDTO updateTopicDTO, @PathVariable Long id) {
+		
 		updateValidators.forEach(v -> v.validate(updateTopicDTO));
 		
 		Topic topic = topicRepository.getReferenceById(id);
@@ -153,9 +176,13 @@ public class TopicController {
 	
 	@DeleteMapping("/{id}")
 	@Transactional
+	@Operation(summary = "Deletes a topic")
 	public ResponseEntity<?> deleteTopic(@PathVariable Long id) {
+		
 		Topic topic = topicRepository.getReferenceById(id);
+		
 		topic.deleteTopic();
+		
 		return ResponseEntity.noContent().build();
 	}
 	
