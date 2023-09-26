@@ -44,7 +44,7 @@ public class User implements UserDetails{
 	public User(CreateUserDTO createUserDTO, String hashedPassword) {
 		this.username = createUserDTO.username();
 		this.password = hashedPassword;
-		this.role = createUserDTO.role();
+		this.role = Role.USER;
 		this.firstName = capitalized(createUserDTO.firstName());
 		this.lastName = capitalized(createUserDTO.lastName());
 		this.email = createUserDTO.email();

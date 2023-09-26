@@ -89,5 +89,9 @@ public class Topic {
 	public void deleteTopic() {
 		this.status = Status.DELETED;
 	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 	
 }

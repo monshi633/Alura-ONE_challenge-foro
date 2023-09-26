@@ -29,7 +29,7 @@ public class TokenService {
 					.withExpiresAt(generateExpiringDate())
 					.sign(algorithm);
 		} catch (JWTCreationException e){
-			throw new RuntimeException();
+			throw new RuntimeException("Failed to generate token");
 		}
 	}
 

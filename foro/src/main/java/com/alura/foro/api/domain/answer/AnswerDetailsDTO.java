@@ -9,17 +9,23 @@ public record AnswerDetailsDTO (
 		LocalDateTime lastUpdate,
 		Boolean solution,
 		Boolean deleted,
-		String user,
-		String topic) {
+		Long userId,
+		String username,
+		Long topicId,
+		String topic
+		) {
 	
 	public AnswerDetailsDTO(Answer answer) {
-		this(answer.getId(),
+		this(
+				answer.getId(),
 				answer.getBody(),
 				answer.getCreationDate(),
 				answer.getLastUpdated(),
 				answer.getSolution(),
 				answer.getDeleted(),
+				answer.getUser().getId(),
 				answer.getUser().getUsername(),
+				answer.getTopic().getId(),
 				answer.getTopic().getTitle());
 	}
 

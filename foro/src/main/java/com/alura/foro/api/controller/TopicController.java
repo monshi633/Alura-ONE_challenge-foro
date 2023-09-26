@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.alura.foro.api.domain.answer.Answer;
+import com.alura.foro.api.domain.answer.AnswerDetailsDTO;
+import com.alura.foro.api.domain.answer.AnswerRepository;
 import com.alura.foro.api.domain.course.Course;
 import com.alura.foro.api.domain.course.CourseRepository;
 import com.alura.foro.api.domain.topic.CreateTopicDTO;
@@ -26,7 +29,8 @@ import com.alura.foro.api.domain.topic.Topic;
 import com.alura.foro.api.domain.topic.TopicDetailsDTO;
 import com.alura.foro.api.domain.topic.TopicRepository;
 import com.alura.foro.api.domain.topic.UpdateTopicDTO;
-import com.alura.foro.api.domain.topic.validations.TopicValidators;
+import com.alura.foro.api.domain.topic.validations.create.CreateTopicValidators;
+import com.alura.foro.api.domain.topic.validations.update.UpdateTopicValidators;
 import com.alura.foro.api.domain.user.User;
 import com.alura.foro.api.domain.user.UserRepository;
 
@@ -47,12 +51,18 @@ public class TopicController {
 	private CourseRepository courseRepository;
 	
 	@Autowired
-	List<TopicValidators> validators;
+	private AnswerRepository answerRepository;
+	
+	@Autowired
+	List<CreateTopicValidators> createValidators;
+
+	@Autowired
+	List<UpdateTopicValidators> updateValidators;
 	
 	@PostMapping
 	@Transactional
 	public ResponseEntity<TopicDetailsDTO> createTopic(@RequestBody @Valid CreateTopicDTO createTopicDTO, UriComponentsBuilder uriBuilder) {
-		validators.forEach(v -> v.validate(createTopicDTO));
+		createValidators.forEach(v -> v.validate(createTopicDTO));
 		
 		User user = userRepository.findById(createTopicDTO.userId()).get();
 		Course course = courseRepository.findById(createTopicDTO.courseId()).get();
@@ -93,16 +103,39 @@ public class TopicController {
 		return ResponseEntity.ok(topicData);
 	}
 	
+	@GetMapping("/{id}/solution")
+	public ResponseEntity<AnswerDetailsDTO> readTopicSolution(@PathVariable Long id) {
+		Answer answer = answerRepository.getReferenceByTopicId(id);
+		
+		var answerData = new AnswerDetailsDTO(
+				answer.getId(),
+				answer.getBody(),
+				answer.getCreationDate(),
+				answer.getLastUpdated(),
+				answer.getSolution(),
+				answer.getDeleted(),
+				answer.getUser().getId(),
+				answer.getUser().getUsername(),
+				answer.getTopic().getId(),
+				answer.getTopic().getTitle()
+				);
+		return ResponseEntity.ok(answerData);
+	}
+	
 	@PutMapping("/{id}")
 	@Transactional
 	public ResponseEntity<TopicDetailsDTO> updateTopic(@RequestBody @Valid UpdateTopicDTO updateTopicDTO, @PathVariable Long id) {
+		updateValidators.forEach(v -> v.validate(updateTopicDTO));
+		
 		Topic topic = topicRepository.getReferenceById(id);
+		
 		if (updateTopicDTO.courseId() != null) {
 			Course course = courseRepository.getReferenceById(updateTopicDTO.courseId());
 			topic.updateTopicWithCourse(updateTopicDTO, course);
 		} else {
 			topic.updateTopic(updateTopicDTO);
 		}
+		
 		var topicData = new TopicDetailsDTO(
 				topic.getId(),
 				topic.getTitle(),
@@ -114,6 +147,7 @@ public class TopicController {
 				topic.getCourse().getName(),
 				topic.getCourse().getCategory()
 				);
+		
 		return ResponseEntity.ok(topicData);
 	}
 	

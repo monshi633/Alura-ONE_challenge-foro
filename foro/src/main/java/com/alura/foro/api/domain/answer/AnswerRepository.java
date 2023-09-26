@@ -10,4 +10,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long>{
 	
 	Page<Answer> findAllByUserId(Long userId, Pageable pagination);
 
+	Answer getReferenceByTopicId(Long id);
+
 }

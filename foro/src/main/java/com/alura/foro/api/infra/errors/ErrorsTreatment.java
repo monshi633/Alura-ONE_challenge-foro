@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,6 +39,11 @@ public class ErrorsTreatment {
 	@ExceptionHandler(ValidationException.class)
 	public ResponseEntity<String> errorHandlerBussinessValidation(Exception e) {
 		return ResponseEntity.badRequest().body(e.getMessage());
+	}
+	
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<String> invalidBodyHandler(Exception e) {
+		return ResponseEntity.badRequest().body("Some parts of the request body are wrongly stated");
 	}
 	
 	private record DataErrorsValidation(String field, String error){

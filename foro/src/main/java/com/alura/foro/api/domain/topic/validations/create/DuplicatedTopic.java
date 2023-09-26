@@ -1,4 +1,4 @@
-package com.alura.foro.api.domain.topic.validations;
+package com.alura.foro.api.domain.topic.validations.create;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,7 @@ import com.alura.foro.api.domain.topic.TopicRepository;
 import jakarta.validation.ValidationException;
 
 @Component
-public class DuplicatedTopic implements TopicValidators{
+public class DuplicatedTopic implements CreateTopicValidators{
 
 	@Autowired
 	private TopicRepository repository;
