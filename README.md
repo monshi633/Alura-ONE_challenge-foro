@@ -27,10 +27,8 @@
 <p>Este proyecto es parte de un curso dictado por Alura y Oracle Next Education</p>
 <p>Esta API permite la comunicación entre front-end y la base de datos. Mediante distintos métodos, se pueden crear, obtener, editar y eliminar usuarios, tópicos, categorías y respuestas. Cada usuario debe acceder mediante su username y password y utilizar el token obtenido para realizar las distintas solicitudes.</p>
 
-<!--
-## Uso del programa
-https://github.com/monshi633/Alura-ONE_challenge-hotel-latam/assets/116769785/3c0cce12-c962-4433-ad56-1946807533f1
--->
+## APi methods
+<img src="https://github.com/monshi633/Alura-ONE_challenge-foro/assets/116769785/549cd195-6b40-4e10-8a9f-5aa27c3950f5">
 
 ## Main features
 * Usuarios
