@@ -14,4 +14,4 @@ server:
         include-stacktrace: never
 api:
     security:
-        secret: ${JWT_SECRET:0303456}
+        secret: ${JWT_SECRET:03034567}

@@ -22,3 +22,5 @@ public class SpringDocConfigurations {
         System.out.println("bearer is working");
     }
 }
+
+// For accessing documentation: http://localhost:8080/swagger-ui/index.html while running
