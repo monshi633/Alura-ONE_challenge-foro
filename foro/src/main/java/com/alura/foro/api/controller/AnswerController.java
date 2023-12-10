@@ -66,7 +66,7 @@ public class AnswerController {
 		createValidators.forEach(v -> v.validate(createAnswerDTO));
 		
 		User user = userRepository.getReferenceById(createAnswerDTO.userId());
-		Topic topic = topicRepository.findById(createAnswerDTO.topicId()).get();
+		Topic topic = topicRepository.getReferenceById(createAnswerDTO.topicId());
 		
 		var answer = new Answer(createAnswerDTO, user, topic);
 		
